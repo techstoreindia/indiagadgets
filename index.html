@@ -346,6 +346,41 @@
     .footer-main { grid-template-columns: 1fr; }
     section { padding: 60px 0; }
   }
+
+  /* PRODUCT IMAGE — real URL support */
+  .product-img-real {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 4px;
+    display: block;
+  }
+  .product-card:hover .product-img-real { transform: scale(1.08); }
+  .product-img-wrap.has-img { padding: 0; background: var(--off-white); }
+  .product-img-wrap.has-img .product-img-real { border-radius: 0; }
+
+  /* MODAL image support */
+  .modal-product-img img {
+    width: 100%; height: 100%;
+    object-fit: cover; border-radius: 10px;
+  }
+
+  /* CART & WISHLIST image support */
+  .cart-item-img img, .wish-item-img img {
+    width: 100%; height: 100%;
+    object-fit: cover; border-radius: 6px;
+  }
+
+  /* IMAGE SKELETON loader */
+  .img-skeleton {
+    width:100%; height:100%;
+    background: linear-gradient(90deg, var(--off-white) 25%, var(--cream) 50%, var(--off-white) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 4px;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
 </style>
 </head>
 <body>
@@ -720,26 +755,34 @@
 //  PRODUCT DATA
 // ══════════════════════════════════════════════
 const products = [
-  { id:1,  name:"Sony WH-1000XM5 Headphones",    category:"Headphones",   price:24999, oldPrice:32000, emoji:"🎧", rating:4.9, reviews:1243,  badge:"hot",  desc:"Industry-leading noise cancellation with 30hr battery life." },
-  { id:2,  name:"Apple AirPods Pro (2nd Gen)",    category:"Earbuds",      price:19999, oldPrice:26900, emoji:"🎵", rating:4.8, reviews:986,   badge:"sale", desc:"Active Noise Cancellation + Adaptive Transparency mode." },
-  { id:3,  name:"Samsung Galaxy Watch 6",         category:"Smartwatches", price:17999, oldPrice:22999, emoji:"⌚", rating:4.7, reviews:754,   badge:"new",  desc:"Advanced health tracking with intelligent sleep coaching." },
-  { id:4,  name:"Logitech MX Master 3S",          category:"Accessories",  price:8499,  oldPrice:9999,  emoji:"🖱️", rating:4.9, reviews:2103,  badge:"hot",  desc:"Ultra-fast scrolling with near-silent precision clicks." },
-  { id:5,  name:"boAt Airdopes 141",              category:"Earbuds",      price:1299,  oldPrice:2990,  emoji:"🎶", rating:4.5, reviews:15782, badge:"sale", desc:"42hr total playback with BEAST Mode for low-latency gaming." },
-  { id:6,  name:"Noise ColorFit Pro 4",           category:"Smartwatches", price:2499,  oldPrice:4999,  emoji:"🕐", rating:4.4, reviews:8341,  badge:"sale", desc:"1.85″ AMOLED display with 100+ sports modes." },
-  { id:7,  name:"Anker PowerCore 26800mAh",       category:"Power Banks",  price:3499,  oldPrice:4999,  emoji:"🔋", rating:4.8, reviews:4201,  badge:"",     desc:"High-capacity bank with 65W Power Delivery output." },
-  { id:8,  name:"Mi Adjustable Laptop Stand",     category:"Accessories",  price:1199,  oldPrice:1999,  emoji:"💻", rating:4.6, reviews:3120,  badge:"",     desc:"Ergonomic aluminium stand with 6 adjustable angles." },
-  { id:9,  name:"Bose QuietComfort 45",           category:"Headphones",   price:27999, oldPrice:34000, emoji:"🔊", rating:4.8, reviews:892,   badge:"",     desc:"Legendary Bose audio quality with world-class ANC." },
-  { id:10, name:"Xiaomi Smart Band 8",            category:"Smartwatches", price:2799,  oldPrice:3499,  emoji:"📿", rating:4.5, reviews:6542,  badge:"new",  desc:"AMOLED always-on display with 16-day battery life." },
-  { id:11, name:"Anker USB-C Hub 7-in-1",        category:"Accessories",  price:2499,  oldPrice:3499,  emoji:"🔌", rating:4.7, reviews:3100,  badge:"",     desc:"HDMI 4K + 3×USB-A + SD card reader + 100W PD." },
-  { id:12, name:"JBL Flip 6 Speaker",            category:"Speakers",     price:11499, oldPrice:13999, emoji:"🔉", rating:4.8, reviews:7231,  badge:"hot",  desc:"IP67 waterproof portable speaker with 12hr battery." },
-  { id:13, name:"Realme Buds Air 5",             category:"Earbuds",      price:3999,  oldPrice:5999,  emoji:"🎼", rating:4.5, reviews:4201,  badge:"new",  desc:"50dB industry-leading ANC with 38hr total playtime." },
-  { id:14, name:"Belkin 3-in-1 MagSafe Charger", category:"Chargers",     price:7499,  oldPrice:9999,  emoji:"⚡", rating:4.7, reviews:1890,  badge:"",     desc:"Charge iPhone + Apple Watch + AirPods simultaneously." },
-  { id:15, name:"HP 65W USB-C GaN Charger",      category:"Chargers",     price:1799,  oldPrice:2499,  emoji:"🔋", rating:4.6, reviews:2300,  badge:"",     desc:"Next-gen GaN technology in an ultra-compact form factor." },
-  { id:16, name:"Razer Hammerhead HyperSpeed",   category:"Earbuds",      price:9999,  oldPrice:12999, emoji:"🎮", rating:4.7, reviews:1120,  badge:"new",  desc:"2.4GHz wireless gaming earbuds with 10ms low latency." },
+  // ── ORIGINAL 16 PRODUCTS (emoji-based) ──
+  { id:1,  name:"Sony WH-1000XM5 Headphones",    category:"Headphones",          price:24999, oldPrice:32000, image:null, emoji:"🎧", rating:4.9, reviews:1243,  badge:"hot",  desc:"Industry-leading noise cancellation with 30hr battery life." },
+  { id:2,  name:"Apple AirPods Pro (2nd Gen)",    category:"Earbuds",             price:19999, oldPrice:26900, image:null, emoji:"🎵", rating:4.8, reviews:986,   badge:"sale", desc:"Active Noise Cancellation + Adaptive Transparency mode." },
+  { id:3,  name:"Samsung Galaxy Watch 6",         category:"Smartwatches",        price:17999, oldPrice:22999, image:null, emoji:"⌚", rating:4.7, reviews:754,   badge:"new",  desc:"Advanced health tracking with intelligent sleep coaching." },
+  { id:4,  name:"Logitech MX Master 3S",          category:"Accessories",         price:8499,  oldPrice:9999,  image:null, emoji:"🖱️", rating:4.9, reviews:2103,  badge:"hot",  desc:"Ultra-fast scrolling with near-silent precision clicks." },
+  { id:5,  name:"boAt Airdopes 141",              category:"Earbuds",             price:1299,  oldPrice:2990,  image:null, emoji:"🎶", rating:4.5, reviews:15782, badge:"sale", desc:"42hr total playback with BEAST Mode for low-latency gaming." },
+  { id:6,  name:"Noise ColorFit Pro 4",           category:"Smartwatches",        price:2499,  oldPrice:4999,  image:null, emoji:"🕐", rating:4.4, reviews:8341,  badge:"sale", desc:"1.85″ AMOLED display with 100+ sports modes." },
+  { id:7,  name:"Anker PowerCore 26800mAh",       category:"Power Banks",         price:3499,  oldPrice:4999,  image:null, emoji:"🔋", rating:4.8, reviews:4201,  badge:"",     desc:"High-capacity bank with 65W Power Delivery output." },
+  { id:8,  name:"Mi Adjustable Laptop Stand",     category:"Accessories",         price:1199,  oldPrice:1999,  image:null, emoji:"💻", rating:4.6, reviews:3120,  badge:"",     desc:"Ergonomic aluminium stand with 6 adjustable angles." },
+  { id:9,  name:"Bose QuietComfort 45",           category:"Headphones",          price:27999, oldPrice:34000, image:null, emoji:"🔊", rating:4.8, reviews:892,   badge:"",     desc:"Legendary Bose audio quality with world-class ANC." },
+  { id:10, name:"Xiaomi Smart Band 8",            category:"Smartwatches",        price:2799,  oldPrice:3499,  image:null, emoji:"📿", rating:4.5, reviews:6542,  badge:"new",  desc:"AMOLED always-on display with 16-day battery life." },
+  { id:11, name:"Anker USB-C Hub 7-in-1",        category:"Accessories",         price:2499,  oldPrice:3499,  image:null, emoji:"🔌", rating:4.7, reviews:3100,  badge:"",     desc:"HDMI 4K + 3×USB-A + SD card reader + 100W PD." },
+  { id:12, name:"JBL Flip 6 Speaker",            category:"Speakers",            price:11499, oldPrice:13999, image:null, emoji:"🔉", rating:4.8, reviews:7231,  badge:"hot",  desc:"IP67 waterproof portable speaker with 12hr battery." },
+  { id:13, name:"Realme Buds Air 5",             category:"Earbuds",             price:3999,  oldPrice:5999,  image:null, emoji:"🎼", rating:4.5, reviews:4201,  badge:"new",  desc:"50dB industry-leading ANC with 38hr total playtime." },
+  { id:14, name:"Belkin 3-in-1 MagSafe Charger", category:"Chargers",            price:7499,  oldPrice:9999,  image:null, emoji:"⚡", rating:4.7, reviews:1890,  badge:"",     desc:"Charge iPhone + Apple Watch + AirPods simultaneously." },
+  { id:15, name:"HP 65W USB-C GaN Charger",      category:"Chargers",            price:1799,  oldPrice:2499,  image:null, emoji:"🔋", rating:4.6, reviews:2300,  badge:"",     desc:"Next-gen GaN technology in an ultra-compact form factor." },
+  { id:16, name:"Razer Hammerhead HyperSpeed",   category:"Earbuds",             price:9999,  oldPrice:12999, image:null, emoji:"🎮", rating:4.7, reviews:1120,  badge:"new",  desc:"2.4GHz wireless gaming earbuds with 10ms low latency." },
+
+  // ── 5 NEW PRODUCTS FROM EXCEL (real image URLs) ──
+  { id:17, name:"Monster Drift 360° RC Stunt Car",   category:"AI Toys",             price:1999,  oldPrice:2999,  image:"https://drive.google.com/uc?export=view&id=1G2YHpLxKo3G98V_RVWhhbhfYRInhn6ae", emoji:"🚗", rating:4.7, reviews:320,  badge:"hot",  desc:"High-speed stunt car with 360° rotation and double-sided driving. Perfect for kids fun and action play." },
+  { id:18, name:"Magic Gesture Sensor Smart Car",    category:"AI Toys",             price:2999,  oldPrice:3999,  image:"https://drive.google.com/uc?export=view&id=1hGq2n56CntBALdGrZ9XRj54j-T3KSa0F", emoji:"✋", rating:4.8, reviews:185,  badge:"new",  desc:"Control this smart car using hand gestures. A futuristic toy for kids." },
+  { id:19, name:"Cyber Truck RC Car",               category:"Remote Control Toys", price:1499,  oldPrice:2499,  image:"https://drive.google.com/uc?export=view&id=1EuPlmKW3LkLMrHTSNbLW-D2pSqhsRBD4", emoji:"🛻", rating:4.6, reviews:210,  badge:"sale", desc:"Futuristic cyber truck style remote control car for kids." },
+  { id:20, name:"Off-Road Rock Crawler RC Car",     category:"Outdoor Toys",        price:1499,  oldPrice:2299,  image:"https://drive.google.com/uc?export=view&id=13o5tPP3mPC8snF-nwzIxxkOPwoLfR0-A", emoji:"🏎️", rating:4.5, reviews:142,  badge:"sale", desc:"Powerful off-road car for indoor and outdoor fun." },
+  { id:21, name:"Flying Sensor Helicopter",         category:"AI Toys",             price:2999,  oldPrice:3999,  image:"https://drive.google.com/uc?export=view&id=1Wx3julvzknYiAFYB-Htd5q8WCp89p4WU", emoji:"🚁", rating:4.8, reviews:267,  badge:"hot",  desc:"Smart flying helicopter controlled by hand gestures." },
 ];
 
-const categories = ["All","Earbuds","Headphones","Smartwatches","Speakers","Power Banks","Accessories","Chargers"];
-const catIcons = { All:"🏪", Earbuds:"🎵", Headphones:"🎧", Smartwatches:"⌚", Speakers:"🔊", "Power Banks":"🔋", Accessories:"🔧", Chargers:"⚡" };
+const categories = ["All","Earbuds","Headphones","Smartwatches","Speakers","Power Banks","Accessories","Chargers","AI Toys","Remote Control Toys","Outdoor Toys"];
+const catIcons = { All:"🏪", Earbuds:"🎵", Headphones:"🎧", Smartwatches:"⌚", Speakers:"🔊", "Power Banks":"🔋", Accessories:"🔧", Chargers:"⚡", "AI Toys":"🤖", "Remote Control Toys":"🚗", "Outdoor Toys":"🏕️" };
 
 let cart = {};
 let wishlist = new Set();
@@ -810,11 +853,17 @@ function renderProducts(list) {
     const inCart = !!cart[p.id];
     const inWish = wishlist.has(p.id);
     const badgeLabel = p.badge === 'sale' ? 'Sale' : p.badge === 'new' ? 'New' : p.badge === 'hot' ? 'Hot' : '';
+    const wrapClass = p.image ? 'product-img-wrap has-img' : 'product-img-wrap';
+    const imgHtml = p.image
+      ? `<img class="product-img-real" src="${p.image}" alt="${p.name}" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+         ><div class="product-img-emoji" style="display:none">${p.emoji}</div>`
+      : `<div class="product-img-emoji">${p.emoji}</div>`;
     return `
     <div class="product-card" style="animation-delay:${i * 0.055}s">
-      <div class="product-img-wrap">
+      <div class="${wrapClass}">
         ${p.badge ? `<span class="product-badge badge-${p.badge}">${badgeLabel}</span>` : ''}
-        <div class="product-img-emoji">${p.emoji}</div>
+        ${imgHtml}
         <button class="wish-btn ${inWish?'active':''}" onclick="toggleWish(${p.id},this)" title="Wishlist">
           <i class="${inWish?'fas':'far'} fa-heart"></i>
         </button>
@@ -902,9 +951,13 @@ function renderCartItems() {
     return;
   }
   footer.style.display = 'block';
-  el.innerHTML = items.map(item => `
+  el.innerHTML = items.map(item => {
+    const thumbHtml = item.image
+      ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" onerror="this.style.display='none';this.parentElement.textContent='${item.emoji}'">`
+      : item.emoji;
+    return `
     <div class="cart-item">
-      <div class="cart-item-img">${item.emoji}</div>
+      <div class="cart-item-img">${thumbHtml}</div>
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-price">₹${(item.price * item.qty).toLocaleString()}</div>
@@ -915,7 +968,8 @@ function renderCartItems() {
         </div>
       </div>
       <button class="cart-item-del" onclick="removeFromCart(${item.id})"><i class="fas fa-trash-alt"></i></button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   const total = items.reduce((a, c) => a + c.price * c.qty, 0);
   document.getElementById('cartTotal').textContent = '₹' + total.toLocaleString();
 }
@@ -976,8 +1030,11 @@ function renderWishItems() {
   el.innerHTML = [...wishlist].map(id => {
     const p = products.find(x => x.id === id);
     if (!p) return '';
+    const thumbHtml = p.image
+      ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" onerror="this.style.display='none';this.parentElement.textContent='${p.emoji}'">`
+      : p.emoji;
     return `<div class="wish-item">
-      <div class="wish-item-img">${p.emoji}</div>
+      <div class="wish-item-img">${thumbHtml}</div>
       <div class="wish-item-info">
         <div class="wish-item-name">${p.name}</div>
         <div class="wish-item-price">₹${p.price.toLocaleString()}</div>
@@ -1000,7 +1057,13 @@ function openBuyModal(id) {
   if (!p) return;
   modalProduct = p;
   modalQtyVal = 1;
-  document.getElementById('modalImg').textContent = p.emoji;
+  // Modal image: real URL or emoji
+  const modalImgEl = document.getElementById('modalImg');
+  if (p.image) {
+    modalImgEl.innerHTML = `<img src="${p.image}" alt="${p.name}" style="width:88px;height:88px;object-fit:cover;border-radius:10px;" onerror="this.outerHTML='${p.emoji}'">`;
+  } else {
+    modalImgEl.textContent = p.emoji;
+  }
   document.getElementById('modalName').textContent = p.name;
   document.getElementById('modalPrice').textContent = '₹' + p.price.toLocaleString();
   document.getElementById('modalDesc').textContent = p.desc;
