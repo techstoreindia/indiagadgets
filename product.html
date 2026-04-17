@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product Detail</title>
+  <script src="products.js"></script>
+</head>
+
+<body>
+
+<h1 id="name"></h1>
+<img id="img" width="300">
+<p id="price"></p>
+<p id="desc"></p>
+
+<ul id="features"></ul>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = parseInt(params.get("id"));
+
+const product = products.find(p => p.id === id);
+
+document.getElementById("name").innerText = product.name;
+document.getElementById("img").src = product.image;
+document.getElementById("price").innerText = "₹" + product.price;
+document.getElementById("desc").innerText = product.description;
+
+product.features.forEach(f => {
+  let li = document.createElement("li");
+  li.innerText = f;
+  document.getElementById("features").appendChild(li);
+});
+</script>
+
+</body>
+</html>
