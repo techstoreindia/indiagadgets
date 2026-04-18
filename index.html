@@ -381,6 +381,18 @@
   }
   @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
+
+  /* PRODUCT CARD — click-to-detail */
+  .product-card { cursor: pointer; }
+  .product-card-link {
+    position: absolute; inset: 0; z-index: 1;
+    border-radius: 16px;
+  }
+  /* Buttons inside card sit above the overlay */
+  .product-body .product-actions,
+  .product-body .product-actions button,
+  .wish-btn { position: relative; z-index: 2; }
+
 </style>
 </head>
 <body>
@@ -860,7 +872,8 @@ function renderProducts(list) {
          ><div class="product-img-emoji" style="display:none">${p.emoji}</div>`
       : `<div class="product-img-emoji">${p.emoji}</div>`;
     return `
-    <div class="product-card" style="animation-delay:${i * 0.055}s">
+    <div class="product-card" data-id="${p.id}" style="animation-delay:${i * 0.055}s" onclick="goToProduct(event,${p.id})">
+      <a class="product-card-link" href="product.html?id=${p.id}" aria-label="View ${p.name}"></a>
       <div class="${wrapClass}">
         ${p.badge ? `<span class="product-badge badge-${p.badge}">${badgeLabel}</span>` : ''}
         ${imgHtml}
@@ -891,6 +904,14 @@ function renderProducts(list) {
       </div>
     </div>`;
   }).join('');
+}
+
+// Navigate to product detail page; ignore clicks on interactive elements
+function goToProduct(e, id) {
+  const tag = e.target.tagName.toLowerCase();
+  const interactive = ['button','a','input','select','textarea'];
+  if (interactive.includes(tag) || e.target.closest('button') || e.target.closest('a.btn-wa-modal') || e.target.closest('a.btn-razorpay')) return;
+  window.location.href = `product.html?id=${id}`;
 }
 
 // ══════════════════════════════════════════════
